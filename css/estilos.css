@@ -1,0 +1,248 @@
+/* ==========================================================================
+   1. RESETEO Y VARIABLES GLOBALES
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+    --bg-principal: #1e222b;       /* Gris oscuro industrial */
+    --bg-card: #252a34;            /* Gris un poco más claro para los bloques */
+    --bg-body: #181b22;            /* Fondo profundo de la página */
+    --texto-blanco: #eaeaea;       /* Texto principal */
+    --texto-mutado: #9aa0a6;       /* Texto secundario o leyendas */
+    --acento-azul: #4e86e4;        /* Azul acero para botones y enlaces activos */
+    --acento-azul-hover: #3a6fd0;  /* Azul oscuro para el paso del mouse */
+    --exito-verde: #2ecc71;        /* Éxito */
+    --error-rojo: #e74c3c;         /* Error */
+    --borde-sutil: #333945;        /* Bordes de tablas e inputs */
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--texto-blanco);
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   2. MENÚ DE NAVEGACIÓN (HEADER)
+   ========================================================================== */
+header {
+    background-color: var(--bg-principal);
+    border-bottom: 2px solid var(--borde-sutil);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px 20px;
+    display: table; /* Usamos una estructura clásica y segura en lugar de flex pesado */
+    width: 100%;
+}
+
+.nav-logo {
+    display: table-cell;
+    vertical-align: middle;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--acento-azul);
+    letter-spacing: 0.5px;
+}
+
+.nav-links {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+    list-style: none;
+}
+
+.nav-links li {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.nav-links a {
+    color: var(--texto-mutado);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover, 
+.nav-links a.active {
+    color: var(--texto-blanco);
+    border-bottom: 2px solid var(--acento-azul);
+    padding-bottom: 4px;
+}
+
+/* ==========================================================================
+   3. MAQUETACIÓN PRINCIPAL (CONTENEDOR DE DOS COLUMNAS)
+   ========================================================================== */
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 20px 0; /* Agrega espacio nativo entre las dos columnas */
+}
+
+.card-formulario, 
+.card-tabla {
+    display: table-cell;
+    vertical-align: top;
+    background-color: var(--bg-card);
+    border-radius: 8px;
+    padding: 25px;
+    border: 1px solid var(--borde-sutil);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.card-formulario {
+    width: 35%; /* La columna del formulario es más angosta */
+}
+
+.card-tabla {
+    width: 65%; /* La columna de la tabla ocupa más espacio */
+}
+
+h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--texto-blanco);
+    border-left: 4px solid var(--acento-azul);
+    padding-left: 10px;
+}
+
+/* ==========================================================================
+   4. COMPONENTES: FORMULARIOS e INPUTS
+   ========================================================================== */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    color: var(--texto-mutado);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    background-color: var(--bg-principal);
+    border: 1px solid var(--borde-sutil);
+    border-radius: 4px;
+    color: var(--texto-blanco);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: var(--acento-azul);
+}
+
+.btn-guardar {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--acento-azul);
+    color: var(--texto-blanco);
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-guardar:hover {
+    background-color: var(--acento-azul-hover);
+}
+
+/* MENSAJES DE ERROR / ÉXITO */
+.feedback {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    display: none; /* Oculto por defecto, JS lo activará */
+    text-align: center;
+}
+
+.feedback.success {
+    display: block;
+    background-color: rgba(46, 204, 113, 0.15);
+    color: var(--exito-verde);
+    border: 1px solid var(--exito-verde);
+}
+
+.feedback.error {
+    display: block;
+    background-color: rgba(231, 76, 60, 0.15);
+    color: var(--error-rojo);
+    border: 1px solid var(--error-rojo);
+}
+
+/* ==========================================================================
+   5. COMPONENTES: TABLAS
+   ========================================================================== */
+.tabla-responsiva {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--borde-sutil);
+}
+
+th {
+    background-color: var(--bg-principal);
+    color: var(--texto-mutado);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.text-center {
+    text-align: center;
+    color: var(--texto-mutado);
+}
+
+/* BOTONES DE ACCIÓN DENTRO DE LA TABLA */
+.btn-eliminar {
+    background: none;
+    border: none;
+    color: var(--error-rojo);
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.btn-eliminar:hover {
+    text-decoration: underline;
+}
