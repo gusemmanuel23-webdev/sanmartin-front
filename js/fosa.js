@@ -61,29 +61,21 @@ async function cargarFosa() {
         
         ordenes.forEach(orden => {
             const fila = document.createElement("tr");
-            
             const vehiculoInfo = orden.vehiculo ? `${orden.vehiculo.marca} [${orden.vehiculo.patente}]` : "S/D";
             
-            // Estilizamos el badge de estado según corresponda
-            let claseEstado = "text-center";
-            let estiloBadge = "padding: 3px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;";
-            
-            if (orden.estado === "Pendiente") {
-                estiloBadge += " background-color: rgba(231, 76, 60, 0.15); color: var(--error-rojo); border: 1px solid var(--error-rojo);";
-            } else {
-                estiloBadge += " background-color: rgba(46, 204, 113, 0.15); color: var(--exito-verde); border: 1px solid var(--exito-verde);";
-            }
+            // Determinamos la clase de color según el estado real
+            let claseColor = orden.estado === "Pendiente" ? "error" : "success";
 
-            // Si está pendiente, le ofrecemos al mecánico el botón para iniciar el trabajo
-            // Si ya está en progreso, mostramos un guión
+            // Si está pendiente, ofrecemos el botón. Si no, texto fijo.
             const botonAccion = orden.estado === "Pendiente"
                 ? `<button class="btn-guardar" style="padding: 5px 10px; font-size: 0.8rem;" onclick="iniciarReparacion(${orden.id})">Iniciar</button>`
                 : `<span style="color: var(--texto-mutado); font-style: italic;">En fosa</span>`;
 
+            // Inyectamos el HTML usando la nueva clase .badge-estado combinada con el feedback de color
             fila.innerHTML = `
                 <td>${vehiculoInfo}</td>
                 <td>${orden.descripcionProblema || "Mantenimiento general"}</td>
-                <td><span style="${estiloBadge}">${orden.estado}</span></td>
+                <td><span class="badge-estado feedback ${claseColor}" style="display: inline-block; margin-top: 0;">${orden.estado}</span></td>
                 <td>${botonAccion}</td>
             `;
             tabla.appendChild(fila);
@@ -134,12 +126,19 @@ async function cargarCatálogoPrecios() {
         servicios.forEach(servicio => {
             const fila = document.createElement("tr");
             
-            // Formateamos el costo a moneda local de forma elegante
-            const precioFormateado = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(servicio.precio);
+            // Cambiamos 'servicio.precio' por 'servicio.precioBase' para que coincida con tu Back
+            const precioFormateado = new Intl.NumberFormat('es-AR', { 
+                style: 'currency', 
+                currency: 'ARS', 
+                maximumFractionDigits: 0 
+            }).format(servicio.precioBase);
 
             fila.innerHTML = `
-                <td>${servicio.nombre}</td>
-                <td style="font-weight: 600; color: var(--acento-azul);">${precioFormateado}</td>
+                <td>
+                    <strong>${servicio.nombre}</strong><br>
+                    <small style="color: var(--texto-mutated); font-size: 0.75rem;">${servicio.descripcion || ''}</small>
+                </td>
+                <td style="font-weight: 600; color: var(--acento-azul); vertical-align: middle;">${precioFormateado}</td>
             `;
             tabla.appendChild(fila);
         });

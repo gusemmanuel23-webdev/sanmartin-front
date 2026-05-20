@@ -257,3 +257,15 @@ tbody tr:hover {
 .btn-eliminar:hover {
     text-decoration: underline;
 }
+
+/* CLASE MAESTRA PARA BADGES DE ESTADO (EVITA SALTO DE LÍNEA) */
+.badge-estado {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    
+    /* Esta es la línea clave que prohíbe el salto de línea automático */
+    white-space: nowrap; 
+}
