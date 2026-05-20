@@ -93,11 +93,18 @@ function configurarFormulario() {
 function mostrarFeedback(mensaje, tipo) {
     const feedback = document.getElementById("mensaje-feedback");
     feedback.innerText = mensaje;
-    feedback.className = `feedback ${tipo}`; // Inyecta dinámicamente .success o .error de CSS
+    feedback.className = `feedback ${tipo}`; // Al agregar la clase, CSS dispara la animación de entrada
     
-    // Desaparece el mensaje automáticamente después de 4 segundos
+    // Configuramos el temporizador para iniciar la salida suave antes de borrar el texto
     setTimeout(() => {
-        feedback.className = "feedback";
-        feedback.innerText = "";
-    }, 4000);
+        feedback.className = "feedback"; // Quitamos .success/.error, CSS dispara la animación de salida
+        
+        // Esperamos 400 milisegundos (lo que dura la transición CSS) para vaciar el texto limpio
+        setTimeout(() => {
+            if (feedback.className === "feedback") {
+                feedback.innerText = "";
+            }
+        }, 400);
+        
+    }, 4000); // El cartel se queda visible 4 segundos completos
 }
