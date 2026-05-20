@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taller San Martín - Pizarra de Fosa</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="nav-logo">Taller San Martín</div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Pizarra de Fosa</a></li>
+                <li><a href="clientes.html">Clientes</a></li>
+                <li><a href="vehiculos.html">Vehículos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container" style="border-spacing: 15px 0;">
+        
+        <section class="card-tabla" style="width: 33%;">
+            <h2>Agenda de Turnos del Día</h2>
+            <div class="tabla-responsiva" style="margin-top: 15px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha / Hora</th>
+                            <th>Vehículo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-turnos-body">
+                        <tr>
+                            <td colspan="2" class="text-center">Cargando turnos...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card-tabla" style="width: 42%;">
+            <h2>Órdenes en Fosa de Reparación</h2>
+            <div class="tabla-responsiva" style="margin-top: 15px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vehículo</th>
+                            <th>Problema / Trabajo</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-fosa-body">
+                        <tr>
+                            <td colspan="4" class="text-center">Cargando órdenes de trabajo...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="mensaje-feedback" class="feedback"></div>
+        </section>
+
+        <section class="card-tabla" style="width: 25%;">
+            <h2>Lista de Precios (Servicios)</h2>
+            <div class="tabla-responsiva" style="margin-top: 15px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Servicio</th>
+                            <th>Costo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-servicios-body">
+                        <tr>
+                            <td colspan="2" class="text-center">Cargando catálogo...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/fosa.js"></script>
+</body>
+</html>
