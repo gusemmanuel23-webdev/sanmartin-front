@@ -63,26 +63,42 @@ async function cargarFosa() {
             const fila = document.createElement("tr");
             const vehiculoInfo = orden.vehiculo ? `${orden.vehiculo.marca} [${orden.vehiculo.patente}]` : "S/D";
             
-            // Determinamos la clase de color según el estado real
+            // Estilos de badge de estado (usando la clase .badge-estado que creamos ayer)
             let claseColor = orden.estado === "Pendiente" ? "error" : "success";
 
-            // Si está pendiente, ofrecemos el botón. Si no, texto fijo.
-            const botonAccion = orden.estado === "Pendiente"
-                ? `<button class="btn-guardar" style="padding: 5px 10px; font-size: 0.8rem;" onclick="iniciarReparacion(${orden.id})">Iniciar</button>`
-                : `<span style="color: var(--texto-mutado); font-style: italic;">En fosa</span>`;
+            // --- LÓGICA DE BOTONES DINÁMICOS ---
+            let htmlAccion = "";
 
-            // Inyectamos el HTML usando la nueva clase .badge-estado combinada con el feedback de color
+            if (orden.estado === "Pendiente") {
+                // Si está pendiente, botón azul para INICIAR
+                htmlAccion = `<button class="btn-guardar" style="padding: 5px 10px; font-size: 0.8rem;" onclick="iniciarReparacion(${orden.id})">Iniciar</button>`;
+            } 
+            else if (orden.estado === "En Proceso") {
+                // Si está en progreso, botón verde para FINALIZAR (Tarea 1.3)
+                htmlAccion = `<button class="btn-finalizar" onclick="finalizarReparacion(${orden.id})">Finalizar</button>`;
+            } 
+            else {
+                // Si ya está finalizado, texto informativo
+                htmlAccion = `<span style="color: var(--texto-mutado); font-style: italic;">Completado</span>`;
+            }
+
             fila.innerHTML = `
                 <td>${vehiculoInfo}</td>
                 <td>${orden.descripcionProblema || "Mantenimiento general"}</td>
                 <td><span class="badge-estado feedback ${claseColor}" style="display: inline-block; margin-top: 0;">${orden.estado}</span></td>
-                <td>${botonAccion}</td>
+                <td>${htmlAccion}</td>
             `;
             tabla.appendChild(fila);
         });
     } catch (error) {
         tabla.innerHTML = `<tr><td colspan="4" class="text-center" style="color: var(--error-rojo);">Error de conexión</td></tr>`;
     }
+}
+
+// Declaramos la función vacía por ahora para que no tire error al hacer clic
+function finalizarReparacion(id) {
+    console.log("Se presionó finalizar para la orden ID:", id);
+    // La lógica de envío al servidor la haremos en la tarea 1.4
 }
 
 // FUNCIÓN DE MUTACIÓN (PATCH /reparaciones/{id}/estado)

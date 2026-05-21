@@ -269,3 +269,25 @@ tbody tr:hover {
     /* Esta es la línea clave que prohíbe el salto de línea automático */
     white-space: nowrap; 
 }
+
+/* BOTÓN FINALIZAR (ESTILO ÉXITO) */
+.btn-finalizar {
+    background-color: var(--exito-verde);
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-finalizar:hover {
+    background-color: #27ae60; /* Un verde un poco más oscuro al pasar el mouse */
+    transform: scale(1.05);
+}
+
+.btn-finalizar:active {
+    transform: scale(0.95);
+}
