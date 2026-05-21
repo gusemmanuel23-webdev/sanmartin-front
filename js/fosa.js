@@ -221,8 +221,50 @@ function mostrarFeedback(mensaje, tipo) {
 // ==========================================================================
 // CONTROLES DE LA VENTANA MODAL DE TURNOS (TAREA 1.5)
 // ==========================================================================
-function abrirModalTurno() {
-    document.getElementById("modal-turno").style.display = "flex";
+async function abrirModalTurno() {
+    const selectVehiculo = document.getElementById("turno-vehiculo");
+    
+    try {
+        // 1. Mostramos un mensaje de espera en el select mientras viajan los datos
+        selectVehiculo.innerHTML = `<option value="">Cargando flota de vehículos...</option>`;
+        
+        // 2. Abrimos la ventana modal visualmente
+        document.getElementById("modal-turno").style.display = "flex";
+
+        // 3. Le pedimos la lista de autos al backend (GET /vehiculos)
+        const vehiculos = await apiFetch("/vehiculos");
+        
+        // 4. Limpiamos el select para llenarlo con los datos reales
+        selectVehiculo.innerHTML = "";
+
+        if (vehiculos.length === 0) {
+            selectVehiculo.innerHTML = `<option value="">No hay vehículos registrados en el sistema</option>`;
+            return;
+        }
+
+        // 5. Agregamos una opción por defecto inicial
+        const opcionInicial = document.createElement("option");
+        opcionInicial.value = "";
+        opcionInicial.textContent = "-- Seleccione un Vehículo --";
+        selectVehiculo.appendChild(opcionInicial);
+
+        // 6. Recorremos la flota e inyectamos cada auto en el menú desplegable
+        vehiculos.forEach(auto => {
+            const opcion = document.createElement("option");
+            
+            // EL VALOR REAL: Guardamos el ID del vehículo por detrás (lo que necesita Java)
+            opcion.value = auto.id; 
+            
+            // EL TEXTO VISUAL: Lo que lee el operario (Marca + Patente entre corchetes)
+            opcion.textContent = `${auto.marca} ${auto.modelo || ''} [${auto.patente}]`;
+            
+            selectVehiculo.appendChild(opcion);
+        });
+
+    } catch (error) {
+        console.error("Error al cargar los vehículos para el turno:", error);
+        selectVehiculo.innerHTML = `<option value="">❌ Error al conectar con el taller</option>`;
+    }
 }
 
 function cerrarModalTurno() {

@@ -340,3 +340,8 @@ tbody tr:hover {
         opacity: 1;
     }
 }
+
+#turno-vehiculo option {
+    background-color: #ffffff !important; 
+    color: #121212 !important;
+}
