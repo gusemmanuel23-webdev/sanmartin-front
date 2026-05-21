@@ -95,10 +95,48 @@ async function cargarFosa() {
     }
 }
 
-// Declaramos la función vacía por ahora para que no tire error al hacer clic
-function finalizarReparacion(id) {
-    console.log("Se presionó finalizar para la orden ID:", id);
-    // La lógica de envío al servidor la haremos en la tarea 1.4
+// ==========================================================================
+// 3.5 FUNCIÓN: FINALIZAR REPARACIÓN Y MOSTRAR FACTURA (TAREA 1.4)
+// ==========================================================================
+async function finalizarReparacion(id) {
+    // Primero, una confirmación nativa para evitar clics accidentales del mecánico
+    if (!confirm("¿Estás seguro de finalizar este trabajo y emitir la factura?")) {
+        return;
+    }
+
+    try {
+        // Enviamos la petición PATCH al backend usando el helper global apiFetch
+        // Mandamos el objeto con el estado en mayúsculas como espera tu validador del Back
+        const ordenActualizada = await apiFetch(`/reparaciones/${id}/estado`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ estado: "FINALIZADO" })
+        });
+
+        // Formateamos el costo total que nos devolvió el servidor para mostrarlo lindo
+        const costoFormateado = new Intl.NumberFormat('es-AR', { 
+            style: 'currency', 
+            currency: 'ARS',
+            maximumFractionDigits: 0 
+        }).format(ordenActualizada.costoTotal || 0);
+
+        // Disparamos el feedback animado con el total facturado
+        mostrarFeedback(
+            `🚀 ¡Trabajo Finalizado con éxito! Factura emitida: ${costoFormateado}`, 
+            "success"
+        );
+
+        // Le damos 2.5 segundos para que el operario lea el cartel antes de recargar la pizarra
+        setTimeout(() => {
+            cargarFosa();
+        }, 2500);
+
+    } catch (error) {
+        console.error("Error al finalizar la orden:", error);
+        mostrarFeedback("❌ No se pudo finalizar la orden de reparación.", "error");
+    }
 }
 
 // FUNCIÓN DE MUTACIÓN (PATCH /reparaciones/{id}/estado)
