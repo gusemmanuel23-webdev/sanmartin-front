@@ -1,5 +1,10 @@
 // ==========================================================================
-// 1. EVENTO DE INICIALIZACIÓN (TRIPLE LLAMADA)
+// VARIABLES GLOBALES Y CONTROL DE FLUJO
+// ==========================================================================
+let listaVehiculosLocal = [];
+
+// ==========================================================================
+// 1. EVENTO DE INICIALIZACIÓN UNIFICADO
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
     cargarTurnos();
@@ -8,40 +13,38 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==========================================================================
-// 2. COLUMNA 1: TURNOS (GET /turnos)
+// 2. COLUMNA 1: AGENDA DE TURNOS (GET /turnos)
 // ==========================================================================
 async function cargarTurnos() {
-    const tabla = document.getElementById("tabla-turnos-body");
+    const tablaAgenda = document.getElementById("tabla-turnos-body");
+    if (!tablaAgenda) return; 
+
     try {
         const turnos = await apiFetch("/turnos");
-        tabla.innerHTML = "";
-        
+        tablaAgenda.innerHTML = "";
+
         if (turnos.length === 0) {
-            tabla.innerHTML = `<tr><td colspan="2" class="text-center">No hay turnos programados.</td></tr>`;
+            tablaAgenda.innerHTML = `<tr><td colspan="3" class="text-center" style="color: var(--texto-mutado);">No hay turnos programados</td></tr>`;
             return;
         }
-        
+
         turnos.forEach(turno => {
             const fila = document.createElement("tr");
             
-            // Formateamos la fecha/hora nativa para que sea amigable en la pizarra
-            // Usamos 'fechaTurno' que es el nombre exacto de tu atributo en el backend
-            const fechaFormateada = turno.fechaTurno 
-                ? new Date(turno.fechaTurno).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute:'2-digit' })
-                : "Sin fecha";
-                
-            const vehiculoInfo = turno.vehiculo 
-                ? `${turno.vehiculo.marca} (${turno.vehiculo.patente})` 
-                : "Desconocido";
+            const infoVehiculo = turno.vehiculo ? `${turno.vehiculo.marca} [${turno.vehiculo.patente}]` : "S/V";
+            const infoCliente = turno.cliente ? turno.cliente.nombre : "S/C";
+            const fechaFormateada = turno.fechaTurno ? turno.fechaTurno.replace("T", " ") : "S/F";
 
             fila.innerHTML = `
-                <td>${fechaFormateada} hs</td>
-                <td><strong>${vehiculoInfo}</strong></td>
+                <td><strong>${fechaFormateada}</strong></td>
+                <td>${infoVehiculo}</td>
+                <td><span style="color: var(--texto-mutado); font-size: 0.85rem;">${infoCliente}</span></td>
             `;
-            tabla.appendChild(fila);
+            tablaAgenda.appendChild(fila);
         });
     } catch (error) {
-        tabla.innerHTML = `<tr><td colspan="2" class="text-center" style="color: var(--error-rojo);">Error de carga</td></tr>`;
+        console.error("Error al renderizar la agenda de turnos:", error);
+        tablaAgenda.innerHTML = `<tr><td colspan="3" class="text-center" style="color: var(--error-rojo);">Error al cargar agenda</td></tr>`;
     }
 }
 
@@ -63,22 +66,16 @@ async function cargarFosa() {
             const fila = document.createElement("tr");
             const vehiculoInfo = orden.vehiculo ? `${orden.vehiculo.marca} [${orden.vehiculo.patente}]` : "S/D";
             
-            // Estilos de badge de estado (usando la clase .badge-estado que creamos ayer)
             let claseColor = orden.estado === "Pendiente" ? "error" : "success";
-
-            // --- LÓGICA DE BOTONES DINÁMICOS ---
             let htmlAccion = "";
 
             if (orden.estado === "Pendiente") {
-                // Si está pendiente, botón azul para INICIAR
                 htmlAccion = `<button class="btn-guardar" style="padding: 5px 10px; font-size: 0.8rem;" onclick="iniciarReparacion(${orden.id})">Iniciar</button>`;
             } 
             else if (orden.estado === "En Proceso") {
-                // Si está en progreso, botón verde para FINALIZAR (Tarea 1.3)
                 htmlAccion = `<button class="btn-finalizar" onclick="finalizarReparacion(${orden.id})">Finalizar</button>`;
             } 
             else {
-                // Si ya está finalizado, texto informativo
                 htmlAccion = `<span style="color: var(--texto-mutado); font-style: italic;">Completado</span>`;
             }
 
@@ -95,40 +92,44 @@ async function cargarFosa() {
     }
 }
 
-// ==========================================================================
-// 3.5 FUNCIÓN: FINALIZAR REPARACIÓN Y MOSTRAR FACTURA (TAREA 1.4)
-// ==========================================================================
+async function iniciarReparacion(id) {
+    try {
+        await apiFetch(`/reparaciones/${id}/estado`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ estado: "En Proceso" })
+        });
+        
+        mostrarFeedback("¡Vehículo ingresado a fosa correctamente!", "success");
+        cargarFosa();
+    } catch (error) {
+        mostrarFeedback("No se pudo actualizar el estado.", "error");
+    }
+}
+
 async function finalizarReparacion(id) {
-    // Primero, una confirmación nativa para evitar clics accidentales del mecánico
     if (!confirm("¿Estás seguro de finalizar este trabajo y emitir la factura?")) {
         return;
     }
 
     try {
-        // Enviamos la petición PATCH al backend usando el helper global apiFetch
-        // Mandamos el objeto con el estado en mayúsculas como espera tu validador del Back
         const ordenActualizada = await apiFetch(`/reparaciones/${id}/estado`, {
             method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ estado: "FINALIZADO" })
         });
 
-        // Formateamos el costo total que nos devolvió el servidor para mostrarlo lindo
         const costoFormateado = new Intl.NumberFormat('es-AR', { 
             style: 'currency', 
             currency: 'ARS',
             maximumFractionDigits: 0 
         }).format(ordenActualizada.costoTotal || 0);
 
-        // Disparamos el feedback animado con el total facturado
         mostrarFeedback(
             `🚀 ¡Trabajo Finalizado con éxito! Factura emitida: ${costoFormateado}`, 
             "success"
         );
 
-        // Le damos 2.5 segundos para que el operario lea el cartel antes de recargar la pizarra
         setTimeout(() => {
             cargarFosa();
         }, 2500);
@@ -136,30 +137,6 @@ async function finalizarReparacion(id) {
     } catch (error) {
         console.error("Error al finalizar la orden:", error);
         mostrarFeedback("❌ No se pudo finalizar la orden de reparación.", "error");
-    }
-}
-
-// FUNCIÓN DE MUTACIÓN (PATCH /reparaciones/{id}/estado)
-async function iniciarReparacion(id) {
-    try {
-        // Le pegamos al endpoint dinámico que armamos en el back
-        await apiFetch(`/reparaciones/${id}/estado`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                estado: "En Proceso"
-            })
-        });
-        
-        // Lanzamos nuestra hermosa animación de feedback suave
-        mostrarFeedback("¡Vehículo ingresado a fosa correctamente!", "success");
-        
-        // Recargamos la fosa al instante para ver el cambio de estado reflejado en vivo
-        cargarFosa();
-    } catch (error) {
-        mostrarFeedback("No se pudo actualizar el estado.", "error");
     }
 }
 
@@ -180,7 +157,6 @@ async function cargarCatálogoPrecios() {
         servicios.forEach(servicio => {
             const fila = document.createElement("tr");
             
-            // Cambiamos 'servicio.precio' por 'servicio.precioBase' para que coincida con tu Back
             const precioFormateado = new Intl.NumberFormat('es-AR', { 
                 style: 'currency', 
                 currency: 'ARS', 
@@ -202,7 +178,90 @@ async function cargarCatálogoPrecios() {
 }
 
 // ==========================================================================
-// 5. AUXILIARES
+// 5. CONTROLES DEL MODAL DE TURNOS FORMULARIO UNIFICADO
+// ==========================================================================
+async function abrirModalTurno() {
+    const selectVehiculo = document.getElementById("turno-vehiculo");
+    
+    try {
+        selectVehiculo.innerHTML = `<option value="">Cargando flota de vehículos...</option>`;
+        document.getElementById("modal-turno").style.display = "flex";
+
+        listaVehiculosLocal = await apiFetch("/vehiculos");
+        selectVehiculo.innerHTML = "";
+
+        if (listaVehiculosLocal.length === 0) {
+            selectVehiculo.innerHTML = `<option value="">No hay vehículos registrados en el sistema</option>`;
+            return;
+        }
+
+        const opcionInicial = document.createElement("option");
+        opcionInicial.value = "";
+        opcionInicial.textContent = "-- Seleccione un Vehículo --";
+        selectVehiculo.appendChild(opcionInicial);
+
+        listaVehiculosLocal.forEach(auto => {
+            const opcion = document.createElement("option");
+            opcion.value = auto.id; 
+            opcion.textContent = `${auto.marca} - ${auto.modelo || ''} [${auto.patente}]`;
+            selectVehiculo.appendChild(opcion);
+        });
+
+    } catch (error) {
+        console.error("Error al cargar los vehículos para el turno:", error);
+        selectVehiculo.innerHTML = `<option value="">❌ Error al conectar con el taller</option>`;
+    }
+}
+
+function cerrarModalTurno() {
+    document.getElementById("modal-turno").style.display = "none";
+    document.getElementById("form-nuevo-turno").reset();
+}
+
+// ESCUCHA ÚNICA Y DEFINITIVA DEL FORMULARIO DE TURNOS
+document.getElementById("form-nuevo-turno").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const idVehiculo = document.getElementById("turno-vehiculo").value;
+    const fechaHoraInput = document.getElementById("turno-fecha").value;
+
+    if (!idVehiculo || !fechaHoraInput) {
+        mostrarFeedback("⚠️ Por favor, complete todos los campos.", "error");
+        return;
+    }
+
+    const vehiculoSeleccionado = listaVehiculosLocal.find(auto => auto.id == idVehiculo);
+
+    if (!vehiculoSeleccionado || !vehiculoSeleccionado.cliente) {
+        mostrarFeedback("❌ Error: El vehículo seleccionado no tiene un dueño asignado.", "error");
+        return;
+    }
+
+    try {
+        const nuevoTurno = {
+            fechaTurno: fechaHoraInput, 
+            vehiculo: { id: parseInt(idVehiculo) },
+            cliente: { id: parseInt(vehiculoSeleccionado.cliente.id) }
+        };
+
+        await apiFetch("/turnos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(nuevoTurno)
+        });
+
+        cerrarModalTurno();
+        mostrarFeedback("📅 ¡Turno agendado con éxito!", "success");
+        cargarTurnos(); 
+
+    } catch (error) {
+        console.error("Error al agendar el turno:", error);
+        mostrarFeedback("❌ Error al guardar el turno en el servidor.", "error");
+    }
+});
+
+// ==========================================================================
+// 6. AUXILIARES GLOBALES
 // ==========================================================================
 function mostrarFeedback(mensaje, tipo) {
     const feedback = document.getElementById("mensaje-feedback");
@@ -216,58 +275,4 @@ function mostrarFeedback(mensaje, tipo) {
             if (feedback.className === "feedback") feedback.innerText = "";
         }, 400);
     }, 4000);
-}
-
-// ==========================================================================
-// CONTROLES DE LA VENTANA MODAL DE TURNOS (TAREA 1.5)
-// ==========================================================================
-async function abrirModalTurno() {
-    const selectVehiculo = document.getElementById("turno-vehiculo");
-    
-    try {
-        // 1. Mostramos un mensaje de espera en el select mientras viajan los datos
-        selectVehiculo.innerHTML = `<option value="">Cargando flota de vehículos...</option>`;
-        
-        // 2. Abrimos la ventana modal visualmente
-        document.getElementById("modal-turno").style.display = "flex";
-
-        // 3. Le pedimos la lista de autos al backend (GET /vehiculos)
-        const vehiculos = await apiFetch("/vehiculos");
-        
-        // 4. Limpiamos el select para llenarlo con los datos reales
-        selectVehiculo.innerHTML = "";
-
-        if (vehiculos.length === 0) {
-            selectVehiculo.innerHTML = `<option value="">No hay vehículos registrados en el sistema</option>`;
-            return;
-        }
-
-        // 5. Agregamos una opción por defecto inicial
-        const opcionInicial = document.createElement("option");
-        opcionInicial.value = "";
-        opcionInicial.textContent = "-- Seleccione un Vehículo --";
-        selectVehiculo.appendChild(opcionInicial);
-
-        // 6. Recorremos la flota e inyectamos cada auto en el menú desplegable
-        vehiculos.forEach(auto => {
-            const opcion = document.createElement("option");
-            
-            // EL VALOR REAL: Guardamos el ID del vehículo por detrás (lo que necesita Java)
-            opcion.value = auto.id; 
-            
-            // EL TEXTO VISUAL: Lo que lee el operario (Marca + Patente entre corchetes)
-            opcion.textContent = `${auto.marca} ${auto.modelo || ''} [${auto.patente}]`;
-            
-            selectVehiculo.appendChild(opcion);
-        });
-
-    } catch (error) {
-        console.error("Error al cargar los vehículos para el turno:", error);
-        selectVehiculo.innerHTML = `<option value="">❌ Error al conectar con el taller</option>`;
-    }
-}
-
-function cerrarModalTurno() {
-    document.getElementById("modal-turno").style.display = "none";
-    document.getElementById("form-nuevo-turno").reset();
 }
