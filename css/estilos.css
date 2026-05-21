@@ -291,3 +291,52 @@ tbody tr:hover {
 .btn-finalizar:active {
     transform: scale(0.95);
 }
+
+/* ==========================================================================
+   ESTILOS PARA VENTANAS MODALES FLOTANTES
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro translúcido */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Asegura que flote por encima de todo */
+}
+
+.modal-content {
+    background-color: #1e1e1e; /* Mismo gris oscuro de tus tarjetas */
+    border: 1px solid var(--borde-oscuro);
+    padding: 25px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    animation: modalEntrada 0.3s ease-out;
+}
+
+.modal-cerrar {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--texto-mutated);
+    transition: color 0.2s;
+}
+
+.modal-cerrar:hover {
+    color: var(--error-rojo);
+}
+
+@keyframes modalEntrada {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

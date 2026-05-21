@@ -1,89 +1,202 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Taller San Martín - Pizarra de Fosa</title>
-    <link rel="stylesheet" href="css/estilos.css">
-</head>
-<body>
-
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+  <body>
     <header>
-        <nav class="navbar">
-            <div class="nav-logo">Taller San Martín</div>
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Pizarra de Fosa</a></li>
-                <li><a href="clientes.html">Clientes</a></li>
-                <li><a href="vehiculos.html">Vehículos</a></li>
-            </ul>
-        </nav>
+      <nav class="navbar">
+        <div class="nav-logo">Taller San Martín</div>
+        <ul class="nav-links">
+          <li><a href="index.html" class="active">Pizarra de Fosa</a></li>
+          <li><a href="clientes.html">Clientes</a></li>
+          <li><a href="vehiculos.html">Vehículos</a></li>
+        </ul>
+      </nav>
     </header>
 
-    <main class="container" style="max-width: 90%; width: 98%; border-spacing: 15px 0;">
-        
-        <section class="card-tabla" style="width: 33%;">
-            <h2>Agenda de Turnos del Día</h2>
-            <div class="tabla-responsiva" style="margin-top: 15px;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha / Hora</th>
-                            <th>Vehículo</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-turnos-body">
-                        <tr>
-                            <td colspan="2" class="text-center">Cargando turnos...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+    <main
+      class="container"
+      style="max-width: 90%; width: 98%; border-spacing: 15px 0"
+    >
+      <section class="card-tabla" style="width: 33%">
+        <!--<h2>Agenda de Turnos del Día</h2>-->
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+          "
+        >
+          <h2 style="margin: 0; flex-basis: 50%">Agenda de Turnos</h2>
+          <button
+            class="btn-guardar"
+            style="padding: 6px 12px; font-size: 0.8rem; flex-basis: 50%"
+            onclick="abrirModalTurno()"
+          >
+            + Nuevo Turno
+          </button>
+        </div>
+        <div class="tabla-responsiva" style="margin-top: 15px">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha / Hora</th>
+                <th>Vehículo</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-turnos-body">
+              <tr>
+                <td colspan="2" class="text-center">Cargando turnos...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-        <section class="card-tabla" style="width: 42%;">
-            <h2>Órdenes en Fosa de Reparación</h2>
-            <div class="tabla-responsiva" style="margin-top: 15px;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Vehículo</th>
-                            <th>Problema / Trabajo</th>
-                            <th>Estado</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-fosa-body">
-                        <tr>
-                            <td colspan="4" class="text-center">Cargando órdenes de trabajo...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div id="mensaje-feedback" class="feedback"></div>
-        </section>
+      <section class="card-tabla" style="width: 42%">
+        <h2>Órdenes en Fosa de Reparación</h2>
+        <div class="tabla-responsiva" style="margin-top: 15px">
+          <table>
+            <thead>
+              <tr>
+                <th>Vehículo</th>
+                <th>Problema / Trabajo</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-fosa-body">
+              <tr>
+                <td colspan="4" class="text-center">
+                  Cargando órdenes de trabajo...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="mensaje-feedback" class="feedback"></div>
+      </section>
 
-        <section class="card-tabla" style="width: 25%;">
-            <h2>Lista de Precios (Servicios)</h2>
-            <div class="tabla-responsiva" style="margin-top: 15px;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Servicio</th>
-                            <th>Costo</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-servicios-body">
-                        <tr>
-                            <td colspan="2" class="text-center">Cargando catálogo...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
+      <section class="card-tabla" style="width: 25%">
+        <h2>Lista de Precios (Servicios)</h2>
+        <div class="tabla-responsiva" style="margin-top: 15px">
+          <table>
+            <thead>
+              <tr>
+                <th>Servicio</th>
+                <th>Costo</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-servicios-body">
+              <tr>
+                <td colspan="2" class="text-center">Cargando catálogo...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </main>
+
+    <div id="modal-turno" class="modal-overlay" style="display: none">
+      <div class="modal-content">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--borde-oscuro);
+            padding-bottom: 10px;
+          "
+        >
+          <h3 style="margin: 0; color: var(--acento-azul)">
+            Agendar Nuevo Turno
+          </h3>
+          <span class="modal-cerrar" onclick="cerrarModalTurno()">&times;</span>
+        </div>
+
+        <form id="form-nuevo-turno">
+          <div style="margin-bottom: 15px">
+            <label
+              style="
+                display: block;
+                margin-bottom: 5px;
+                font-size: 0.85rem;
+                color: var(--texto-mutated);
+              "
+              >Seleccionar Vehículo</label
+            >
+            <select
+              id="turno-vehiculo"
+              style="
+                width: 100%;
+                padding: 8px;
+                background: var(--fondo-tarjeta);
+                color: #fff;
+                border: 1px solid var(--borde-oscuro);
+                border-radius: 4px;
+              "
+              required
+            >
+              <option value="">Cargando vehículos...</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 20px">
+            <label
+              style="
+                display: block;
+                margin-bottom: 5px;
+                font-size: 0.85rem;
+                color: var(--texto-mutated);
+              "
+              >Fecha y Hora del Turno</label
+            >
+            <input
+              type="datetime-local"
+              id="turno-fecha"
+              style="
+                width: 100%;
+                padding: 8px;
+                background: var(--fondo-tarjeta);
+                color: #fff;
+                border: 1px solid var(--borde-oscuro);
+                border-radius: 4px;
+              "
+              required
+            />
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px">
+            <button
+              type="button"
+              class="btn-cancelar"
+              onclick="cerrarModalTurno()"
+              style="
+                background: transparent;
+                border: 1px solid var(--borde-oscuro);
+                color: var(--texto-mutated);
+                padding: 8px 15px;
+                border-radius: 4px;
+                cursor: pointer;
+              "
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-guardar" style="padding: 8px 15px">
+              Confirmar Turno
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <script src="js/api.js"></script>
     <script src="js/fosa.js"></script>
-</body>
+  </body>
 </html>

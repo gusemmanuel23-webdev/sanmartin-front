@@ -217,3 +217,15 @@ function mostrarFeedback(mensaje, tipo) {
         }, 400);
     }, 4000);
 }
+
+// ==========================================================================
+// CONTROLES DE LA VENTANA MODAL DE TURNOS (TAREA 1.5)
+// ==========================================================================
+function abrirModalTurno() {
+    document.getElementById("modal-turno").style.display = "flex";
+}
+
+function cerrarModalTurno() {
+    document.getElementById("modal-turno").style.display = "none";
+    document.getElementById("form-nuevo-turno").reset();
+}
