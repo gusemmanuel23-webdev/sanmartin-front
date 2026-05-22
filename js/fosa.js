@@ -276,3 +276,21 @@ function mostrarFeedback(mensaje, tipo) {
         }, 400);
     }, 4000);
 }
+
+// ==========================================================================
+// CONTROLES DE LA VENTANA MODAL DE SERVICIOS (TAREA 1.8 - AGREGAR)
+// ==========================================================================
+function abrirModalServicio() {
+    const modal = document.getElementById("modal-servicio");
+    if (modal) {
+        modal.style.display = "flex";
+    }
+}
+
+function cerrarModalServicio() {
+    const modal = document.getElementById("modal-servicio");
+    if (modal) {
+        modal.style.display = "none";
+        document.getElementById("form-nuevo-servicio").reset();
+    }
+}
